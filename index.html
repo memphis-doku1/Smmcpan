@@ -34,7 +34,7 @@
 </head>
 <body class="bg-cpanBg text-white font-sans antialiased min-h-screen relative overflow-x-hidden transition-colors duration-300" id="body-theme">
 
-    <!-- ÉCRAN DE CONNEXION (Caché par défaut, s'affiche si déconnexion) -->
+    <!-- ÉCRAN DE CONNEXION -->
     <div id="login-screen" class="hidden fixed inset-0 bg-black z-50 flex items-center justify-center p-6">
         <div class="bg-cpanCard border border-gray-800 rounded-3xl p-8 max-w-sm w-full shadow-2xl text-center">
             <div class="w-14 h-14 bg-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -42,7 +42,6 @@
             </div>
             <h2 class="text-2xl font-black text-white tracking-wider mb-1">SMM<span class="text-cpanAccentLight">CPAN</span></h2>
             <p class="text-xs text-gray-500 mb-6">Connectez-vous à votre espace VIP</p>
-            
             <div class="space-y-4 text-left">
                 <div>
                     <label class="block text-xs text-gray-400 mb-1">Email</label>
@@ -72,20 +71,16 @@
                     <p class="text-[0.55rem] text-gray-500 mt-1 font-semibold">"CHEAPEST, FASTEST, BEST"</p>
                 </div>
             </div>
-            
             <div class="flex items-center gap-2">
-                <!-- Theme toggle button -->
                 <button id="theme-toggle-btn" class="w-9 h-9 bg-cpanInput rounded-xl flex items-center justify-center text-gray-400 hover:text-white transition">
                     <i class="fa-solid fa-moon" id="theme-icon"></i>
                 </button>
                 <button class="w-9 h-9 bg-cpanInput rounded-xl flex items-center justify-center text-gray-500 hover:text-white transition">
                     <i class="fa-solid fa-language"></i>
                 </button>
-                
                 <button id="profile-btn" class="w-9 h-9 rounded-xl overflow-hidden bg-gray-800 hover:ring-2 hover:ring-cpanAccent transition-all focus:outline-none">
                     <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Saber&backgroundColor=333333&accessories=sunglasses" alt="Avatar" class="w-full h-full object-cover">
                 </button>
-                
                 <button id="menu-btn" class="w-9 h-9 bg-cpanAccent text-white rounded-xl flex items-center justify-center relative">
                     <i class="fa-solid fa-bars"></i>
                 </button>
@@ -115,13 +110,13 @@
         <div class="mx-4 mt-6 grid grid-cols-3 gap-3">
             <div class="bg-cpanCard border border-gray-800 rounded-2xl p-3 flex flex-col items-center justify-center text-center shadow-lg">
                 <i class="fa-solid fa-chart-pie text-cpanAccentLight text-lg mb-1.5 opacity-80"></i>
-                <span id="global-orders-count" class="text-white font-bold text-sm tracking-wide">22,751</span>
+                <span id="global-orders-count" class="text-white font-bold text-sm tracking-wide">0</span>
                 <span class="text-[0.6rem] text-gray-500 uppercase tracking-widest mt-0.5">Orders</span>
             </div>
             <div class="bg-cpanCard border border-gray-800 rounded-2xl p-3 flex flex-col items-center justify-center text-center shadow-lg relative overflow-hidden">
                 <div class="absolute -right-2 -bottom-2 opacity-5 text-4xl"><i class="fa-solid fa-dollar-sign"></i></div>
                 <i class="fa-solid fa-sack-dollar text-cpanAccentLight text-lg mb-1.5 opacity-80"></i>
-                <span id="global-spent-count" class="text-cpanAccentLight font-bold text-sm tracking-wide">$17,972.7</span>
+                <span id="global-spent-count" class="text-cpanAccentLight font-bold text-sm tracking-wide">$0.00</span>
                 <span class="text-[0.6rem] text-gray-500 uppercase tracking-widest mt-0.5">Spent</span>
             </div>
             <div class="bg-cpanCard border border-gray-800 rounded-2xl p-3 flex flex-col items-center justify-center text-center shadow-lg">
@@ -150,7 +145,7 @@
             </div>
         </div>
 
-        <!-- Onglets Navigation Formulaires -->
+        <!-- Onglets Navigation -->
         <div class="mx-4 mt-6 flex gap-2 relative z-10">
             <button id="tab-nav-new" class="flex-1 bg-[#1a1705] text-cpanAccentLight border-t border-l border-r border-yellow-900/40 py-3 rounded-t-2xl font-semibold flex items-center justify-center gap-2 shadow-lg transition-all text-xs sm:text-sm">
                 <i class="fa-solid fa-cart-plus"></i> New Order
@@ -166,12 +161,11 @@
             </button>
         </div>
 
-        <!-- CONTENEUR PRINCIPAL FORMULAIRES -->
+        <!-- CONTENEUR FORMULAIRES -->
         <div class="bg-cpanCard rounded-b-3xl rounded-tr-3xl p-5 mx-4 border border-gray-800 -mt-px relative z-0 mb-10">
             
             <!-- VUE : NEW ORDER -->
             <div id="view-new-order" class="block">
-                <!-- Plateformes Grid -->
                 <div class="grid grid-cols-4 gap-4 mb-8" id="platform-grid">
                     <button data-platform="all" class="platform-btn aspect-square rounded-full bg-cpanAccent text-black flex items-center justify-center font-bold text-sm ring-2 ring-cpanAccent ring-offset-2 ring-offset-cpanCard transition-all">All</button>
                     <button data-platform="instagram" class="platform-btn aspect-square rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 text-white flex items-center justify-center text-3xl opacity-60 transition-all"><i class="fa-brands fa-instagram"></i></button>
@@ -184,8 +178,6 @@
                 </div>
 
                 <div class="space-y-5">
-                    
-                    <!-- MENU DÉROULANT CUSTOMISÉ AVEC BOUTON FAVORI (ÉTOILE) -->
                     <div>
                         <div class="flex justify-between items-center mb-2">
                             <label class="block text-sm text-gray-300">Category (VIP Prices)</label>
@@ -200,11 +192,9 @@
                                     <i class="fa-solid fa-chevron-down text-gray-400 text-[0.6rem] transition-transform duration-300" id="custom-select-icon"></i>
                                 </div>
                             </div>
-                            
                             <div id="custom-select-dropdown" class="hidden absolute left-0 right-0 top-full mt-2 bg-[#141414] border border-gray-700 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.8)] z-50 max-h-64 overflow-y-auto custom-scrollbar">
                                 <ul id="custom-service-list" class="flex flex-col"></ul>
                             </div>
-                            
                             <input type="hidden" id="service" value="">
                         </div>
                     </div>
@@ -232,7 +222,6 @@
                         </div>
                     </div>
 
-                    <!-- DRIP-FEED OPTION -->
                     <div class="bg-cpanInput/30 border border-gray-800/80 rounded-xl p-3">
                         <label class="flex items-center justify-between cursor-pointer group">
                             <div class="flex items-center gap-2">
@@ -245,7 +234,6 @@
                                 <div class="dot absolute left-1 top-1 bg-gray-400 w-4 h-4 rounded-full transition transform" id="drip-dot"></div>
                             </div>
                         </label>
-
                         <div id="drip-feed-options" class="hidden mt-4 pt-3 border-t border-gray-800">
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
@@ -273,13 +261,12 @@
                 </div>
             </div>
 
-            <!-- VUE : SUBSCRIPTIONS (ACTIF) -->
+            <!-- VUE : SUBSCRIPTIONS -->
             <div id="view-subscriptions" class="hidden space-y-4">
                 <div class="mb-2">
                     <h3 class="text-white font-bold text-lg flex items-center gap-2"><i class="fa-solid fa-rotate text-cpanAccentLight"></i> Active Subscriptions</h3>
                     <p class="text-xs text-gray-400 mt-1">Gérez vos envois automatiques récurrents sur vos profils.</p>
                 </div>
-
                 <div class="bg-cpanInput border border-gray-800 rounded-2xl p-4 flex flex-col gap-3">
                     <div class="flex justify-between items-start">
                         <div>
@@ -294,32 +281,15 @@
                         <span class="text-cpanAccentLight font-semibold">150 Likes / post</span>
                     </div>
                 </div>
-
-                <div class="bg-cpanInput border border-gray-800 rounded-2xl p-4 flex flex-col gap-3">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <span class="text-[0.65rem] bg-black text-gray-400 px-2 py-0.5 rounded font-mono border border-gray-800">ID: 201</span>
-                            <h4 class="text-sm font-semibold text-white mt-1">TikTok Auto-Views</h4>
-                        </div>
-                        <span class="text-[0.65rem] uppercase font-bold px-2 py-0.5 rounded border text-blue-400 bg-blue-500/10 border-blue-500/20">Running</span>
-                    </div>
-                    <p class="text-xs text-gray-400 truncate">Link: https://tiktok.com/@saber</p>
-                    <div class="flex justify-between items-center pt-2 border-t border-gray-800/60 text-xs text-gray-500">
-                        <span>Posts restants : <strong>10 / 10</strong></span>
-                        <span class="text-cpanAccentLight font-semibold">5000 Vues / post</span>
-                    </div>
-                </div>
             </div>
 
-            <!-- VUE : FAVOURITE (ACTIF) -->
+            <!-- VUE : FAVOURITE -->
             <div id="view-favourite" class="hidden space-y-4">
                 <div class="mb-2">
                     <h3 class="text-white font-bold text-lg flex items-center gap-2"><i class="fa-solid fa-star text-yellow-500"></i> My Favourite Services</h3>
                     <p class="text-xs text-gray-400 mt-1">Retrouvez ici vos services enregistrés en favoris pour y accéder rapidement.</p>
                 </div>
-                <div id="favourite-services-list" class="space-y-3">
-                    <!-- Rempli dynamiquement -->
-                </div>
+                <div id="favourite-services-list" class="space-y-3"></div>
             </div>
 
             <!-- VUE : MASS ORDER -->
@@ -349,7 +319,6 @@
                     <i class="fa-solid fa-bolt text-sm opacity-50 group-hover:opacity-100 group-hover:text-black"></i>
                 </button>
             </div>
-
         </div>
     </div>
 
@@ -480,12 +449,11 @@
         </div>
     </div>
 
-    <!-- 5. MODALE : SETTINGS (NOUVEAU) -->
+    <!-- 5. MODALE : SETTINGS -->
     <div id="settings-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-cpanCard w-full max-w-sm rounded-3xl p-6 border border-gray-800 shadow-[0_0_40px_rgba(0,0,0,0.8)] relative transform transition-all scale-95 opacity-0" id="settings-content">
             <button id="close-settings-btn" class="absolute top-4 right-4 text-gray-500 hover:text-white transition-colors w-8 h-8 flex items-center justify-center rounded-full bg-cpanInput"><i class="fa-solid fa-xmark"></i></button>
             <h2 class="text-xl font-bold mb-6 text-white flex items-center gap-2"><i class="fa-solid fa-gear text-cpanAccentLight"></i> Account Settings</h2>
-            
             <div class="space-y-4">
                 <div>
                     <label class="block text-xs text-gray-400 mb-1">Nom d'utilisateur</label>
@@ -514,11 +482,8 @@
         let generatedOrders = [];
         let generatedFunds = [];
         let generatedTickets = []; 
-        let favouriteServiceIds = new Set([303, 401, 201]); // Favoris par défaut
+        let favouriteServiceIds = new Set([101, 201, 303]);
 
-        generatedTickets.push({id: 84920, subject: 'Refill', orderId: '1098432', status: 'Closed', date: new Date(Date.now() - 86400000*5)});
-        generatedTickets.push({id: 85012, subject: 'Payment', orderId: '', status: 'Answered', date: new Date(Date.now() - 86400000)});
-        
         function updateTicketCounter() {
             document.getElementById('global-tickets-count').textContent = generatedTickets.length;
             if(document.getElementById('ticket-count-display')) document.getElementById('ticket-count-display').textContent = generatedTickets.length;
@@ -578,20 +543,29 @@
             const savedSpent = localStorage.getItem('cpan_spent');
 
             if (savedOrders && savedFunds) {
-                // Parse et recréation des objets Date perdus par JSON.stringify
                 generatedOrders = JSON.parse(savedOrders).map(o => ({...o, date: new Date(o.date)}));
                 generatedFunds = JSON.parse(savedFunds).map(f => ({...f, date: new Date(f.date)}));
-                if (savedTickets) generatedTickets = JSON.parse(savedTickets).map(t => ({...t, date: new Date(t.date)}));
                 
+                if (savedTickets) {
+                    generatedTickets = JSON.parse(savedTickets).map(t => ({...t, date: new Date(t.date)}));
+                } else {
+                    generatedTickets = [
+                        {id: 84920, subject: 'Refill', orderId: '1098432', status: 'Closed', date: new Date(Date.now() - 86400000*5)},
+                        {id: 85012, subject: 'Payment', orderId: '', status: 'Answered', date: new Date(Date.now() - 86400000)}
+                    ];
+                }
+
                 actualBalanceNum = parseFloat(savedBalance) || actualBalanceNum;
                 globalSpentNum = parseFloat(savedSpent) || globalSpentNum;
             } else {
-                // Si aucune donnée n'existe en local, on génère les données initiales
+                generatedTickets = [
+                    {id: 84920, subject: 'Refill', orderId: '1098432', status: 'Closed', date: new Date(Date.now() - 86400000*5)},
+                    {id: 85012, subject: 'Payment', orderId: '', status: 'Answered', date: new Date(Date.now() - 86400000)}
+                ];
                 initializeMassiveData();
                 sauvegarderDonnees();
             }
 
-            // Mise à jour de l'interface après chargement
             document.getElementById('global-orders-count').textContent = generatedOrders.length.toLocaleString();
             document.getElementById('global-spent-count').textContent = "$" + globalSpentNum.toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 2});
             if(document.getElementById('count-orders')) document.getElementById('count-orders').textContent = generatedOrders.length.toLocaleString();
@@ -600,13 +574,14 @@
             updateTicketCounter();
         }
 
+        // On limite la base initiale à 50 commandes pour éviter la surcharge mémoire
         function initializeMassiveData() {
-            const startDate = new Date(2016, 0, 1).getTime();
+            const startDate = new Date(2023, 0, 1).getTime();
             const endDate = new Date().getTime(); 
-            const orderStatuses = ['Completed', 'Completed', 'Completed', 'Processing', 'Partial', 'Canceled'];
+            const orderStatuses = ['Completed', 'Completed', 'Processing', 'Partial', 'Canceled'];
             const flatServices = servicesData.all;
 
-            for (let i = 0; i < 50; i++) { // Réduit pour le premier chargement (pour ne pas faire ramer le navigateur lors de la sauvegarde)
+            for (let i = 0; i < 50; i++) {
                 const randomDate = new Date(startDate + Math.random() * (endDate - startDate));
                 const randomService = flatServices[Math.floor(Math.random() * flatServices.length)];
                 const qty = Math.floor(Math.random() * 5000) + 100;
@@ -623,29 +598,22 @@
             generatedFunds.sort((a, b) => b.date - a.date);
         }
 
-        // --- NAVIGATION ENTRE LES 4 ONGLETS PRINCIPAUX ---
         const tabNavNew = document.getElementById('tab-nav-new');
         const tabNavSubs = document.getElementById('tab-nav-subs');
         const tabNavFav = document.getElementById('tab-nav-fav');
         const tabNavMass = document.getElementById('tab-nav-mass');
-        
         const viewNewOrder = document.getElementById('view-new-order');
         const viewSubs = document.getElementById('view-subscriptions');
         const viewFav = document.getElementById('view-favourite');
         const viewMassOrder = document.getElementById('view-mass-order');
-
         const allTabs = [tabNavNew, tabNavSubs, tabNavFav, tabNavMass];
         const allViews = [viewNewOrder, viewSubs, viewFav, viewMassOrder];
 
         function switchTab(activeTab, activeView) {
             allViews.forEach(v => v.classList.add('hidden'));
             activeView.classList.remove('hidden');
-
-            allTabs.forEach(t => {
-                t.className = "flex-1 bg-transparent text-gray-400 py-3 rounded-t-2xl font-semibold flex items-center justify-center gap-2 transition-all border-b border-gray-800 text-xs sm:text-sm";
-            });
+            allTabs.forEach(t => t.className = "flex-1 bg-transparent text-gray-400 py-3 rounded-t-2xl font-semibold flex items-center justify-center gap-2 transition-all border-b border-gray-800 text-xs sm:text-sm");
             activeTab.className = "flex-1 bg-[#1a1705] text-cpanAccentLight border-t border-l border-r border-yellow-900/40 py-3 rounded-t-2xl font-semibold flex items-center justify-center gap-2 shadow-lg transition-all text-xs sm:text-sm";
-            
             if(activeTab === tabNavFav) renderFavouriteServices();
         }
 
@@ -654,12 +622,10 @@
         tabNavFav.addEventListener('click', () => switchTab(tabNavFav, viewFav));
         tabNavMass.addEventListener('click', () => switchTab(tabNavMass, viewMassOrder));
 
-        // --- MENU DÉROULANT ---
         const menuBtn = document.getElementById('menu-btn');
         const dropdownMenu = document.getElementById('dropdown-menu');
         menuBtn.addEventListener('click', (e) => { e.stopPropagation(); dropdownMenu.classList.toggle('hidden'); });
 
-        // --- THEME TOGGLE (Dark / Light) ---
         const themeToggleBtn = document.getElementById('theme-toggle-btn');
         const themeIcon = document.getElementById('theme-icon');
         let isDarkMode = true;
@@ -674,7 +640,6 @@
             }
         });
 
-        // --- LOGOUT & SETTINGS ---
         const logoutBtn = document.getElementById('logout-btn');
         const loginScreen = document.getElementById('login-screen');
         logoutBtn.addEventListener('click', (e) => { e.preventDefault(); dropdownMenu.classList.add('hidden'); loginScreen.classList.remove('hidden'); });
@@ -699,7 +664,6 @@
             closeSettingsModal();
         });
 
-        // --- MASQUER SOLDE ---
         const balanceAmount = document.getElementById('balance-amount');
         const toggleBalanceBtn = document.getElementById('toggle-balance');
         const eyeIcon = document.getElementById('eye-icon');
@@ -715,7 +679,6 @@
         }
         toggleBalanceBtn.addEventListener('click', () => { isBalanceHidden = !isBalanceHidden; updateBalanceUI(); });
 
-        // --- DRIP-FEED ---
         const dripFeedToggle = document.getElementById('drip-feed-toggle');
         const dripBg = document.getElementById('drip-bg');
         const dripDot = document.getElementById('drip-dot');
@@ -735,7 +698,6 @@
             updateCalculations();
         });
 
-        // --- CUSTOM SELECT & FAVOURITES ---
         const platformBtns = document.querySelectorAll('.platform-btn');
         const serviceHiddenInput = document.getElementById('service');
         const customSelectBtn = document.getElementById('custom-select-button');
@@ -745,7 +707,6 @@
         const customServiceList = document.getElementById('custom-service-list');
         const toggleFavServiceBtn = document.getElementById('toggle-fav-service-btn');
         const favIconIndicator = document.getElementById('fav-icon-indicator');
-        
         const quantityInput = document.getElementById('quantity');
         const priceDisplay = document.getElementById('total-price');
         const originalPriceDisplay = document.getElementById('original-price');
@@ -781,12 +742,10 @@
         function updateServices() {
             customServiceList.innerHTML = '';
             const listToDisplay = currentPlatform === 'all' ? servicesData.all : (servicesData[currentPlatform] || []);
-            
             listToDisplay.forEach((service) => {
                 const unitText = service.unit === 1 ? 'Unité' : '1000';
                 const vipRate = service.rate.toFixed(2);
                 const isFav = favouriteServiceIds.has(service.id);
-                
                 const li = document.createElement('li');
                 li.className = "px-4 py-3 border-b border-gray-800 hover:bg-[#252525] cursor-pointer transition-colors flex justify-between items-center";
                 li.innerHTML = `
@@ -801,137 +760,66 @@
                         <i class="${isFav ? 'fa-solid text-yellow-400' : 'fa-regular'} fa-star"></i>
                     </button>
                 `;
-                
-                // Clic sur l'étoile favori
-                li.querySelector('.fav-star-btn').addEventListener('click', (ev) => {
-                    ev.stopPropagation();
-                    toggleFavourite(service.id);
-                    updateServices();
-                });
-
-                // Sélection du service
-                li.addEventListener('click', () => {
-                    selectService(service);
-                    customSelectDropdown.classList.add('hidden');
-                    customSelectBtn.classList.remove('border-cpanAccent');
-                    customSelectIcon.classList.remove('rotate-180');
-                });
-                
+                li.querySelector('.fav-star-btn').addEventListener('click', (ev) => { ev.stopPropagation(); toggleFavourite(service.id); updateServices(); });
+                li.addEventListener('click', () => { selectService(service); customSelectDropdown.classList.add('hidden'); customSelectBtn.classList.remove('border-cpanAccent'); customSelectIcon.classList.remove('rotate-180'); });
                 customServiceList.appendChild(li);
             });
-            
-            if(listToDisplay.length > 0) {
-                selectService(listToDisplay[0]);
-            } else {
-                serviceHiddenInput.value = "";
-                customSelectText.textContent = "No services available";
-            }
+            if(listToDisplay.length > 0) selectService(listToDisplay[0]); else { serviceHiddenInput.value = ""; customSelectText.textContent = "No services available"; }
         }
 
         function selectService(service) {
             serviceHiddenInput.value = service.id;
             customSelectText.innerHTML = `<span class="font-mono text-gray-500 mr-1.5">[${service.id}]</span> <span class="text-white">${service.name}</span>`;
-            
-            // Mettre à jour l'icône étoile du header du select
-            if(favouriteServiceIds.has(service.id)) {
-                favIconIndicator.className = "fa-solid text-yellow-400";
-            } else {
-                favIconIndicator.className = "fa-regular fa-star";
-            }
+            if(favouriteServiceIds.has(service.id)) favIconIndicator.className = "fa-solid text-yellow-400"; else favIconIndicator.className = "fa-regular fa-star";
             updateCalculations();
         }
 
-        // Action bouton favori rapide en haut du select
-        toggleFavServiceBtn.addEventListener('click', () => {
-            const currentId = parseInt(serviceHiddenInput.value);
-            if(!isNaN(currentId)) {
-                toggleFavourite(currentId);
-                updateServices();
-            }
-        });
+        toggleFavServiceBtn.addEventListener('click', () => { const currentId = parseInt(serviceHiddenInput.value); if(!isNaN(currentId)) { toggleFavourite(currentId); updateServices(); } });
+        function toggleFavourite(id) { if(favouriteServiceIds.has(id)) favouriteServiceIds.delete(id); else favouriteServiceIds.add(id); }
 
-        function toggleFavourite(id) {
-            if(favouriteServiceIds.has(id)) favouriteServiceIds.delete(id);
-            else favouriteServiceIds.add(id);
-        }
-
-        // Rendu de l'onglet favoris
         function renderFavouriteServices() {
-            const container = document.getElementById('favourite-services-list');
-            container.innerHTML = '';
-            
+            const container = document.getElementById('favourite-services-list'); container.innerHTML = '';
             const favs = servicesData.all.filter(s => favouriteServiceIds.has(s.id));
-            if(favs.length === 0) {
-                container.innerHTML = '<div class="text-center text-sm text-gray-500 py-6">Aucun service en favori pour le moment.</div>';
-                return;
-            }
-
+            if(favs.length === 0) return container.innerHTML = '<div class="text-center text-sm text-gray-500 py-6">Aucun service en favori pour le moment.</div>';
             favs.forEach(service => {
                 const div = document.createElement('div');
                 div.className = "bg-cpanCard border border-gray-800 rounded-2xl p-4 flex justify-between items-center";
-                div.innerHTML = `
-                    <div>
-                        <span class="text-[0.65rem] bg-black text-gray-400 border border-gray-700 px-1.5 py-0.5 rounded font-mono">ID: ${service.id}</span>
-                        <h4 class="text-sm font-semibold text-white mt-1">${service.name}</h4>
-                        <span class="text-xs text-cpanAccentLight font-bold">$${service.rate.toFixed(2)} / 1000</span>
-                    </div>
-                    <button class="bg-cpanInput hover:bg-cpanAccent hover:text-black text-white text-xs font-bold py-2 px-3 rounded-xl transition select-fav-direct" data-id="${service.id}">
-                        Commander
-                    </button>
-                `;
-                div.querySelector('.select-fav-direct').addEventListener('click', () => {
-                    switchTab(tabNavNew, viewNewOrder);
-                    selectService(service);
-                });
+                div.innerHTML = `<div><span class="text-[0.65rem] bg-black text-gray-400 border border-gray-700 px-1.5 py-0.5 rounded font-mono">ID: ${service.id}</span><h4 class="text-sm font-semibold text-white mt-1">${service.name}</h4><span class="text-xs text-cpanAccentLight font-bold">$${service.rate.toFixed(2)} / 1000</span></div><button class="bg-cpanInput hover:bg-cpanAccent hover:text-black text-white text-xs font-bold py-2 px-3 rounded-xl transition select-fav-direct" data-id="${service.id}">Commander</button>`;
+                div.querySelector('.select-fav-direct').addEventListener('click', () => { switchTab(tabNavNew, viewNewOrder); selectService(service); });
                 container.appendChild(div);
             });
         }
 
         function updateCalculations() {
-            const serviceId = serviceHiddenInput.value;
-            if (!serviceId) return;
-            const selectedService = serviceMap.get(serviceId);
-            if(!selectedService) return;
-            
-            quantityInput.min = selectedService.min;
-            quantityInput.max = selectedService.max;
-            limitsDisplay.textContent = `Min: ${selectedService.min} - Max: ${selectedService.max}`;
-
+            const serviceId = serviceHiddenInput.value; if (!serviceId) return;
+            const selectedService = serviceMap.get(serviceId); if(!selectedService) return;
+            quantityInput.min = selectedService.min; quantityInput.max = selectedService.max; limitsDisplay.textContent = `Min: ${selectedService.min} - Max: ${selectedService.max}`;
             const baseQty = parseInt(quantityInput.value) || 0;
             const runs = isDripFeed ? (parseInt(dripRuns.value) || 1) : 1;
             const totalQty = baseQty * runs;
-            
             dripTotalQty.textContent = totalQty.toLocaleString();
-
             let finalVipPrice = 0, fakeOriginalPrice = 0;
             if (baseQty > 0) {
                 const unitDivider = selectedService.unit || 1000;
                 finalVipPrice = (totalQty / unitDivider) * selectedService.rate;
                 fakeOriginalPrice = finalVipPrice * 2;
-                originalPriceDisplay.textContent = fakeOriginalPrice.toFixed(4);
-                originalPriceDisplay.classList.remove('hidden');
-            } else {
-                originalPriceDisplay.classList.add('hidden');
-            }
-            priceDisplay.textContent = finalVipPrice.toFixed(4); 
-            orderMsgContainer.classList.add('hidden');
+                originalPriceDisplay.textContent = fakeOriginalPrice.toFixed(4); originalPriceDisplay.classList.remove('hidden');
+            } else { originalPriceDisplay.classList.add('hidden'); }
+            priceDisplay.textContent = finalVipPrice.toFixed(4); orderMsgContainer.classList.add('hidden');
         }
-
         quantityInput.addEventListener('input', updateCalculations);
         dripRuns.addEventListener('input', updateCalculations);
         updateServices();
 
         function showMsg(container, text, isError) {
-            container.innerHTML = text;
-            container.className = `text-xs font-medium py-2 px-3 rounded mt-2 ${isError ? 'text-red-500 bg-red-900/20 border border-red-900' : 'text-green-500 bg-green-900/20 border border-green-900'}`;
-            container.classList.remove('hidden');
-            setTimeout(() => { container.classList.add('hidden'); }, 5000);
+            container.innerHTML = text; container.className = `text-xs font-medium py-2 px-3 rounded mt-2 ${isError ? 'text-red-500 bg-red-900/20 border border-red-900' : 'text-green-500 bg-green-900/20 border border-green-900'}`;
+            container.classList.remove('hidden'); setTimeout(() => { container.classList.add('hidden'); }, 5000);
         }
 
-        // --- Lancement du chargement des données au démarrage ---
+        // CHARGEMENT AU DEMARRAGE
         chargerDonnees();
 
-        // --- SUBMIT NEW ORDER ---
+        // --- SUBMIT NEW ORDER (AVEC SAUVEGARDE) ---
         document.getElementById('submit-order-btn').addEventListener('click', () => {
             const baseQty = parseInt(quantityInput.value) || 0;
             const link = orderLinkInput.value.trim();
@@ -944,10 +832,8 @@
             const totalPrice = parseFloat(priceDisplay.textContent);
             if (totalPrice > actualBalanceNum) return showMsg(orderMsgContainer, 'Insufficient balance!', true);
 
-            actualBalanceNum -= totalPrice;
-            updateBalanceUI();
-            globalSpentNum += totalPrice;
-            document.getElementById('global-spent-count').textContent = "$" + globalSpentNum.toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 2});
+            actualBalanceNum -= totalPrice; updateBalanceUI();
+            globalSpentNum += totalPrice; document.getElementById('global-spent-count').textContent = "$" + globalSpentNum.toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 2});
 
             const totalQty = isDripFeed ? baseQty * (parseInt(dripRuns.value) || 1) : baseQty;
             const serviceName = isDripFeed ? `${selectedService.name} (Drip)` : selectedService.name;
@@ -962,7 +848,7 @@
             orderLinkInput.value = ''; quantityInput.value = ''; updateCalculations();
         });
 
-        // --- MASS ORDER ---
+        // --- MASS ORDER (AVEC SAUVEGARDE) ---
         const massOrderInput = document.getElementById('mass-order-input');
         const massLinesCount = document.getElementById('mass-lines-count');
         const massMsgContainer = document.getElementById('mass-msg-container');
@@ -980,8 +866,7 @@
             for(let i=0; i<lines.length; i++) {
                 const parts = lines[i].split('|').map(p => p.trim());
                 if(parts.length !== 3) return showMsg(massMsgContainer, `Line ${i+1} format error.`, true);
-                const service = serviceMap.get(parts[0]);
-                const qty = parseInt(parts[2]);
+                const service = serviceMap.get(parts[0]); const qty = parseInt(parts[2]);
                 if(!service) return showMsg(massMsgContainer, `Line ${i+1}: Unknown ID.`, true);
                 if(isNaN(qty) || qty < service.min || qty > service.max) return showMsg(massMsgContainer, `Line ${i+1}: Qty error.`, true);
                 
@@ -1007,7 +892,7 @@
             massOrderInput.value = ''; massLinesCount.textContent = '0';
         });
 
-        // Modales & Vues secondaires (Add Funds, Profile, History, Tickets)
+        // --- ADD FUNDS (AVEC SAUVEGARDE) ---
         const openAddFundsBtn = document.getElementById('open-add-funds');
         const addFundsModal = document.getElementById('add-funds-modal');
         const addFundsContent = document.getElementById('add-funds-content');
@@ -1033,7 +918,7 @@
         profileBtn.addEventListener('click', (e) => { e.stopPropagation(); profileModal.classList.remove('hidden'); setTimeout(() => { profileContent.classList.remove('scale-95', 'opacity-0'); profileContent.classList.add('scale-100', 'opacity-100'); }, 10); });
         document.getElementById('close-profile-btn').addEventListener('click', () => { profileContent.classList.remove('scale-100', 'opacity-100'); profileContent.classList.add('scale-95', 'opacity-0'); setTimeout(() => { profileModal.classList.add('hidden'); }, 200); });
 
-        // Tickets
+        // TICKETS
         const openTicketsBtn = document.getElementById('open-tickets-btn');
         const ticketsView = document.getElementById('tickets-view');
         openTicketsBtn.addEventListener('click', (e) => { e.preventDefault(); dropdownMenu.classList.add('hidden'); ticketsView.classList.remove('hidden'); setTimeout(() => { ticketsView.classList.remove('translate-x-full'); }, 10); renderTickets(); });
@@ -1060,7 +945,7 @@
             document.getElementById('ticket-message').value = ''; renderTickets(); showMsg(document.getElementById('ticket-msg-container'), 'Ticket created!', false);
         });
 
-        // History
+        // HISTORIQUE
         const openHistoryBtn = document.getElementById('open-history-btn');
         const historyView = document.getElementById('history-view');
         openHistoryBtn.addEventListener('click', (e) => { e.preventDefault(); dropdownMenu.classList.add('hidden'); historyView.classList.remove('hidden'); setTimeout(() => { historyView.classList.remove('translate-x-full'); }, 10); renderHistoryList(); });
