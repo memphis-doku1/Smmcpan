@@ -526,55 +526,70 @@
         const serviceMap = new Map();
         servicesData.all.forEach(s => serviceMap.set(s.id.toString(), s));
 
-        // --- GESTION DU LOCAL STORAGE POUR LA PERSISTANCE ---
+        // --- GESTION DU LOCAL STORAGE POUR LA PERSISTANCE (V2) ---
         function sauvegarderDonnees() {
-            localStorage.setItem('cpan_orders', JSON.stringify(generatedOrders));
-            localStorage.setItem('cpan_funds', JSON.stringify(generatedFunds));
-            localStorage.setItem('cpan_tickets', JSON.stringify(generatedTickets));
-            localStorage.setItem('cpan_balance', actualBalanceNum.toString());
-            localStorage.setItem('cpan_spent', globalSpentNum.toString());
+            // Nouveaux identifiants 'cpan_v2' pour forcer un nettoyage propre chez l'utilisateur
+            localStorage.setItem('cpan_v2_orders', JSON.stringify(generatedOrders));
+            localStorage.setItem('cpan_v2_funds', JSON.stringify(generatedFunds));
+            localStorage.setItem('cpan_v2_tickets', JSON.stringify(generatedTickets));
+            localStorage.setItem('cpan_v2_balance', actualBalanceNum.toString());
+            localStorage.setItem('cpan_v2_spent', globalSpentNum.toString());
         }
 
         function chargerDonnees() {
-            const savedOrders = localStorage.getItem('cpan_orders');
-            const savedFunds = localStorage.getItem('cpan_funds');
-            const savedTickets = localStorage.getItem('cpan_tickets');
-            const savedBalance = localStorage.getItem('cpan_balance');
-            const savedSpent = localStorage.getItem('cpan_spent');
+            const savedOrders = localStorage.getItem('cpan_v2_orders');
+            const savedFunds = localStorage.getItem('cpan_v2_funds');
+            const savedTickets = localStorage.getItem('cpan_v2_tickets');
+            const savedBalance = localStorage.getItem('cpan_v2_balance');
+            const savedSpent = localStorage.getItem('cpan_v2_spent');
+
+            // Chargement hyper strict du solde
+            if (savedBalance !== null && savedBalance !== "") {
+                let parseVal = parseFloat(savedBalance);
+                if (!isNaN(parseVal)) actualBalanceNum = parseVal;
+            }
+
+            // Chargement hyper strict des dépenses
+            if (savedSpent !== null && savedSpent !== "") {
+                let parseSpent = parseFloat(savedSpent);
+                if (!isNaN(parseSpent)) globalSpentNum = parseSpent;
+            }
 
             if (savedOrders && savedFunds) {
-                generatedOrders = JSON.parse(savedOrders).map(o => ({...o, date: new Date(o.date)}));
-                generatedFunds = JSON.parse(savedFunds).map(f => ({...f, date: new Date(f.date)}));
-                
-                if (savedTickets) {
-                    generatedTickets = JSON.parse(savedTickets).map(t => ({...t, date: new Date(t.date)}));
-                } else {
-                    generatedTickets = [
-                        {id: 84920, subject: 'Refill', orderId: '1098432', status: 'Closed', date: new Date(Date.now() - 86400000*5)},
-                        {id: 85012, subject: 'Payment', orderId: '', status: 'Answered', date: new Date(Date.now() - 86400000)}
-                    ];
+                try {
+                    generatedOrders = JSON.parse(savedOrders).map(o => ({...o, date: new Date(o.date)}));
+                    generatedFunds = JSON.parse(savedFunds).map(f => ({...f, date: new Date(f.date)}));
+                    if (savedTickets) {
+                        generatedTickets = JSON.parse(savedTickets).map(t => ({...t, date: new Date(t.date)}));
+                    } else {
+                        creerTicketsDefaut();
+                    }
+                } catch(e) {
+                    creerTicketsDefaut();
+                    initializeMassiveData();
                 }
-
-                actualBalanceNum = parseFloat(savedBalance) || actualBalanceNum;
-                globalSpentNum = parseFloat(savedSpent) || globalSpentNum;
             } else {
-                generatedTickets = [
-                    {id: 84920, subject: 'Refill', orderId: '1098432', status: 'Closed', date: new Date(Date.now() - 86400000*5)},
-                    {id: 85012, subject: 'Payment', orderId: '', status: 'Answered', date: new Date(Date.now() - 86400000)}
-                ];
+                creerTicketsDefaut();
                 initializeMassiveData();
                 sauvegarderDonnees();
             }
 
-            document.getElementById('global-orders-count').textContent = generatedOrders.length.toLocaleString();
+            // Mise à jour de l'interface
+            updateBalanceUI();
             document.getElementById('global-spent-count').textContent = "$" + globalSpentNum.toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 2});
+            document.getElementById('global-orders-count').textContent = generatedOrders.length.toLocaleString();
             if(document.getElementById('count-orders')) document.getElementById('count-orders').textContent = generatedOrders.length.toLocaleString();
             if(document.getElementById('count-funds')) document.getElementById('count-funds').textContent = generatedFunds.length.toLocaleString();
-            updateBalanceUI();
             updateTicketCounter();
         }
 
-        // On limite la base initiale à 50 commandes pour éviter la surcharge mémoire
+        function creerTicketsDefaut() {
+            generatedTickets = [
+                {id: 84920, subject: 'Refill', orderId: '1098432', status: 'Closed', date: new Date(Date.now() - 86400000*5)},
+                {id: 85012, subject: 'Payment', orderId: '', status: 'Answered', date: new Date(Date.now() - 86400000)}
+            ];
+        }
+
         function initializeMassiveData() {
             const startDate = new Date(2023, 0, 1).getTime();
             const endDate = new Date().getTime(); 
@@ -816,7 +831,7 @@
             container.classList.remove('hidden'); setTimeout(() => { container.classList.add('hidden'); }, 5000);
         }
 
-        // CHARGEMENT AU DEMARRAGE
+        // --- CHARGEMENT AU DEMARRAGE ---
         chargerDonnees();
 
         // --- SUBMIT NEW ORDER (AVEC SAUVEGARDE) ---
@@ -840,7 +855,7 @@
 
             generatedOrders.unshift({ id: Math.floor(Math.random() * 8999999 + 1000000), date: new Date(), service: serviceName, qty: totalQty, price: totalPrice.toFixed(3), status: 'Processing' });
             
-            sauvegarderDonnees(); // Sauvegarde locale
+            sauvegarderDonnees();
 
             document.getElementById('global-orders-count').textContent = generatedOrders.length.toLocaleString();
             if(document.getElementById('count-orders')) document.getElementById('count-orders').textContent = generatedOrders.length.toLocaleString();
@@ -884,7 +899,7 @@
                 generatedOrders.unshift({ id: Math.floor(Math.random() * 8999999 + 1000000), date: new Date(), service: o.service.name, qty: o.qty, price: o.price.toFixed(3), status: 'Processing' });
             });
             
-            sauvegarderDonnees(); // Sauvegarde locale
+            sauvegarderDonnees();
 
             document.getElementById('global-orders-count').textContent = generatedOrders.length.toLocaleString();
             if(document.getElementById('count-orders')) document.getElementById('count-orders').textContent = generatedOrders.length.toLocaleString();
@@ -905,7 +920,7 @@
                 actualBalanceNum += amountToFund; updateBalanceUI();
                 generatedFunds.unshift({ id: 'TX-' + Math.floor(Math.random() * 90000 + 10000), date: new Date(), amount: amountToFund, method: 'Visa •••• 3490', status: 'Completed' });
                 
-                sauvegarderDonnees(); // Sauvegarde locale
+                sauvegarderDonnees();
                 
                 if(document.getElementById('count-funds')) document.getElementById('count-funds').textContent = generatedFunds.length.toLocaleString();
                 addFundsModal.classList.add('hidden');
@@ -940,7 +955,7 @@
             if(!msg) return showMsg(document.getElementById('ticket-msg-container'), 'Message empty.', true);
             generatedTickets.unshift({ id: Math.floor(Math.random() * 90000 + 10000), subject: subject, status: 'Pending', date: new Date() });
             
-            sauvegarderDonnees(); // Sauvegarde locale
+            sauvegarderDonnees();
             
             document.getElementById('ticket-message').value = ''; renderTickets(); showMsg(document.getElementById('ticket-msg-container'), 'Ticket created!', false);
         });
