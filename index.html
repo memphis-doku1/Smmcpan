@@ -514,7 +514,7 @@
         let generatedOrders = [];
         let generatedFunds = [];
         let generatedTickets = []; 
-        let favouriteServiceIds = new Set([101, 201, 303]); // Favoris par défaut
+        let favouriteServiceIds = new Set([303, 401, 201]); // Favoris par défaut
 
         generatedTickets.push({id: 84920, subject: 'Refill', orderId: '1098432', status: 'Closed', date: new Date(Date.now() - 86400000*5)});
         generatedTickets.push({id: 85012, subject: 'Payment', orderId: '', status: 'Answered', date: new Date(Date.now() - 86400000)});
@@ -561,13 +561,52 @@
         const serviceMap = new Map();
         servicesData.all.forEach(s => serviceMap.set(s.id.toString(), s));
 
+        // --- GESTION DU LOCAL STORAGE POUR LA PERSISTANCE ---
+        function sauvegarderDonnees() {
+            localStorage.setItem('cpan_orders', JSON.stringify(generatedOrders));
+            localStorage.setItem('cpan_funds', JSON.stringify(generatedFunds));
+            localStorage.setItem('cpan_tickets', JSON.stringify(generatedTickets));
+            localStorage.setItem('cpan_balance', actualBalanceNum.toString());
+            localStorage.setItem('cpan_spent', globalSpentNum.toString());
+        }
+
+        function chargerDonnees() {
+            const savedOrders = localStorage.getItem('cpan_orders');
+            const savedFunds = localStorage.getItem('cpan_funds');
+            const savedTickets = localStorage.getItem('cpan_tickets');
+            const savedBalance = localStorage.getItem('cpan_balance');
+            const savedSpent = localStorage.getItem('cpan_spent');
+
+            if (savedOrders && savedFunds) {
+                // Parse et recréation des objets Date perdus par JSON.stringify
+                generatedOrders = JSON.parse(savedOrders).map(o => ({...o, date: new Date(o.date)}));
+                generatedFunds = JSON.parse(savedFunds).map(f => ({...f, date: new Date(f.date)}));
+                if (savedTickets) generatedTickets = JSON.parse(savedTickets).map(t => ({...t, date: new Date(t.date)}));
+                
+                actualBalanceNum = parseFloat(savedBalance) || actualBalanceNum;
+                globalSpentNum = parseFloat(savedSpent) || globalSpentNum;
+            } else {
+                // Si aucune donnée n'existe en local, on génère les données initiales
+                initializeMassiveData();
+                sauvegarderDonnees();
+            }
+
+            // Mise à jour de l'interface après chargement
+            document.getElementById('global-orders-count').textContent = generatedOrders.length.toLocaleString();
+            document.getElementById('global-spent-count').textContent = "$" + globalSpentNum.toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 2});
+            if(document.getElementById('count-orders')) document.getElementById('count-orders').textContent = generatedOrders.length.toLocaleString();
+            if(document.getElementById('count-funds')) document.getElementById('count-funds').textContent = generatedFunds.length.toLocaleString();
+            updateBalanceUI();
+            updateTicketCounter();
+        }
+
         function initializeMassiveData() {
             const startDate = new Date(2016, 0, 1).getTime();
             const endDate = new Date().getTime(); 
             const orderStatuses = ['Completed', 'Completed', 'Completed', 'Processing', 'Partial', 'Canceled'];
             const flatServices = servicesData.all;
 
-            for (let i = 0; i < 22751; i++) {
+            for (let i = 0; i < 50; i++) { // Réduit pour le premier chargement (pour ne pas faire ramer le navigateur lors de la sauvegarde)
                 const randomDate = new Date(startDate + Math.random() * (endDate - startDate));
                 const randomService = flatServices[Math.floor(Math.random() * flatServices.length)];
                 const qty = Math.floor(Math.random() * 5000) + 100;
@@ -575,17 +614,14 @@
                 generatedOrders.push({ id: Math.floor(Math.random() * 8999999 + 1000000), date: randomDate, service: randomService.name, qty: qty, price: price, status: orderStatuses[Math.floor(Math.random() * orderStatuses.length)] });
             }
             const fundMethods = ['Visa •••• 3490', 'PayPal (saber...)', 'Mastercard •••• 1212', 'Crypto (BTC)'];
-            for (let i = 0; i < 5432; i++) {
+            for (let i = 0; i < 15; i++) {
                 const randomDate = new Date(startDate + Math.random() * (endDate - startDate));
                 const amount = (Math.random() * 150 + 10).toFixed(2);
                 generatedFunds.push({ id: 'TX-' + Math.floor(Math.random() * 90000 + 10000), date: randomDate, amount: parseFloat(amount), method: fundMethods[Math.floor(Math.random() * fundMethods.length)], status: 'Completed' });
             }
             generatedOrders.sort((a, b) => b.date - a.date);
             generatedFunds.sort((a, b) => b.date - a.date);
-            if(document.getElementById('count-orders')) document.getElementById('count-orders').textContent = generatedOrders.length.toLocaleString();
-            if(document.getElementById('count-funds')) document.getElementById('count-funds').textContent = generatedFunds.length.toLocaleString();
         }
-        initializeMassiveData();
 
         // --- NAVIGATION ENTRE LES 4 ONGLETS PRINCIPAUX ---
         const tabNavNew = document.getElementById('tab-nav-new');
@@ -892,6 +928,9 @@
             setTimeout(() => { container.classList.add('hidden'); }, 5000);
         }
 
+        // --- Lancement du chargement des données au démarrage ---
+        chargerDonnees();
+
         // --- SUBMIT NEW ORDER ---
         document.getElementById('submit-order-btn').addEventListener('click', () => {
             const baseQty = parseInt(quantityInput.value) || 0;
@@ -914,7 +953,11 @@
             const serviceName = isDripFeed ? `${selectedService.name} (Drip)` : selectedService.name;
 
             generatedOrders.unshift({ id: Math.floor(Math.random() * 8999999 + 1000000), date: new Date(), service: serviceName, qty: totalQty, price: totalPrice.toFixed(3), status: 'Processing' });
+            
+            sauvegarderDonnees(); // Sauvegarde locale
+
             document.getElementById('global-orders-count').textContent = generatedOrders.length.toLocaleString();
+            if(document.getElementById('count-orders')) document.getElementById('count-orders').textContent = generatedOrders.length.toLocaleString();
             showMsg(orderMsgContainer, 'Order placed successfully!', false);
             orderLinkInput.value = ''; quantityInput.value = ''; updateCalculations();
         });
@@ -955,7 +998,11 @@
             validOrders.forEach(o => {
                 generatedOrders.unshift({ id: Math.floor(Math.random() * 8999999 + 1000000), date: new Date(), service: o.service.name, qty: o.qty, price: o.price.toFixed(3), status: 'Processing' });
             });
+            
+            sauvegarderDonnees(); // Sauvegarde locale
+
             document.getElementById('global-orders-count').textContent = generatedOrders.length.toLocaleString();
+            if(document.getElementById('count-orders')) document.getElementById('count-orders').textContent = generatedOrders.length.toLocaleString();
             showMsg(massMsgContainer, `${validOrders.length} Mass Orders placed!`, false);
             massOrderInput.value = ''; massLinesCount.textContent = '0';
         });
@@ -972,6 +1019,9 @@
             if (isNaN(amountToFund) || amountToFund < 50) { document.getElementById('fund-error-msg').classList.remove('hidden'); } else {
                 actualBalanceNum += amountToFund; updateBalanceUI();
                 generatedFunds.unshift({ id: 'TX-' + Math.floor(Math.random() * 90000 + 10000), date: new Date(), amount: amountToFund, method: 'Visa •••• 3490', status: 'Completed' });
+                
+                sauvegarderDonnees(); // Sauvegarde locale
+                
                 if(document.getElementById('count-funds')) document.getElementById('count-funds').textContent = generatedFunds.length.toLocaleString();
                 addFundsModal.classList.add('hidden');
             }
@@ -1004,6 +1054,9 @@
             const subject = document.getElementById('ticket-subject').value, msg = document.getElementById('ticket-message').value.trim();
             if(!msg) return showMsg(document.getElementById('ticket-msg-container'), 'Message empty.', true);
             generatedTickets.unshift({ id: Math.floor(Math.random() * 90000 + 10000), subject: subject, status: 'Pending', date: new Date() });
+            
+            sauvegarderDonnees(); // Sauvegarde locale
+            
             document.getElementById('ticket-message').value = ''; renderTickets(); showMsg(document.getElementById('ticket-msg-container'), 'Ticket created!', false);
         });
 
