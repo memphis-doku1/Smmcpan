@@ -3,6 +3,7 @@
   "short_name": "SMMCPAN",
   "description": "Dashboard mobile VIP SMMCPAN - Cheapest, Fastest, Best",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
