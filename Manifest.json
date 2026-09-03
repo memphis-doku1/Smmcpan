@@ -1,0 +1,24 @@
+{
+  "name": "SMMCPAN VIP Dashboard",
+  "short_name": "SMMCPAN",
+  "description": "Dashboard mobile VIP SMMCPAN - Cheapest, Fastest, Best",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icone5.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icone5.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
