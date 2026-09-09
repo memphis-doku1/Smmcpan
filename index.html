@@ -495,10 +495,11 @@
                 { id: 102, name: 'Facebook Likes', rate: 1.5, min: 100, max: 50000 },
                 { id: 103, name: 'Facebook Followers + Likes', rate: 3.4, min: 100, max: 50000 },
                 { id: 104, name: 'Facebook Commentaires', rate: 60.0, min: 10, max: 5000 },
-                { id: 105, name: 'Facebook Spectateurs Live', rate: 15.0, min: 50, max: 5000 }
+                { id: 105, name: 'Facebook Spectateurs Live', rate: 15.0, min: 50, max: 5000 },
+                { id: 106, name: 'Facebook Followers + Likes Arabes Account with VPN', rate: 2.9, min: 100, max: 50000 }
             ],
             youtube: [
-                { id: 201, name: 'YouTube Vues', rate: 1.8, min: 1000, max: 5000000 },
+                { id: 201, name: 'YouTube Vues', rate: 2.11, min: 1000, max: 5000000 },
                 { id: 202, name: 'YouTube Likes', rate: 5.5, min: 100, max: 100000 },
                 { id: 203, name: 'YouTube Abonnés', rate: 25.0, min: 50, max: 5000 },
                 { id: 204, name: 'YouTube Watchtime', rate: 18.0, min: 100, max: 4000 },
@@ -526,70 +527,55 @@
         const serviceMap = new Map();
         servicesData.all.forEach(s => serviceMap.set(s.id.toString(), s));
 
-        // --- GESTION DU LOCAL STORAGE POUR LA PERSISTANCE (V2) ---
+        // --- GESTION DU LOCAL STORAGE POUR LA PERSISTANCE ---
         function sauvegarderDonnees() {
-            // Nouveaux identifiants 'cpan_v2' pour forcer un nettoyage propre chez l'utilisateur
-            localStorage.setItem('cpan_v2_orders', JSON.stringify(generatedOrders));
-            localStorage.setItem('cpan_v2_funds', JSON.stringify(generatedFunds));
-            localStorage.setItem('cpan_v2_tickets', JSON.stringify(generatedTickets));
-            localStorage.setItem('cpan_v2_balance', actualBalanceNum.toString());
-            localStorage.setItem('cpan_v2_spent', globalSpentNum.toString());
+            localStorage.setItem('cpan_orders', JSON.stringify(generatedOrders));
+            localStorage.setItem('cpan_funds', JSON.stringify(generatedFunds));
+            localStorage.setItem('cpan_tickets', JSON.stringify(generatedTickets));
+            localStorage.setItem('cpan_balance', actualBalanceNum.toString());
+            localStorage.setItem('cpan_spent', globalSpentNum.toString());
         }
 
         function chargerDonnees() {
-            const savedOrders = localStorage.getItem('cpan_v2_orders');
-            const savedFunds = localStorage.getItem('cpan_v2_funds');
-            const savedTickets = localStorage.getItem('cpan_v2_tickets');
-            const savedBalance = localStorage.getItem('cpan_v2_balance');
-            const savedSpent = localStorage.getItem('cpan_v2_spent');
-
-            // Chargement hyper strict du solde
-            if (savedBalance !== null && savedBalance !== "") {
-                let parseVal = parseFloat(savedBalance);
-                if (!isNaN(parseVal)) actualBalanceNum = parseVal;
-            }
-
-            // Chargement hyper strict des dépenses
-            if (savedSpent !== null && savedSpent !== "") {
-                let parseSpent = parseFloat(savedSpent);
-                if (!isNaN(parseSpent)) globalSpentNum = parseSpent;
-            }
+            const savedOrders = localStorage.getItem('cpan_orders');
+            const savedFunds = localStorage.getItem('cpan_funds');
+            const savedTickets = localStorage.getItem('cpan_tickets');
+            const savedBalance = localStorage.getItem('cpan_balance');
+            const savedSpent = localStorage.getItem('cpan_spent');
 
             if (savedOrders && savedFunds) {
-                try {
-                    generatedOrders = JSON.parse(savedOrders).map(o => ({...o, date: new Date(o.date)}));
-                    generatedFunds = JSON.parse(savedFunds).map(f => ({...f, date: new Date(f.date)}));
-                    if (savedTickets) {
-                        generatedTickets = JSON.parse(savedTickets).map(t => ({...t, date: new Date(t.date)}));
-                    } else {
-                        creerTicketsDefaut();
-                    }
-                } catch(e) {
-                    creerTicketsDefaut();
-                    initializeMassiveData();
+                generatedOrders = JSON.parse(savedOrders).map(o => ({...o, date: new Date(o.date)}));
+                generatedFunds = JSON.parse(savedFunds).map(f => ({...f, date: new Date(f.date)}));
+                
+                if (savedTickets) {
+                    generatedTickets = JSON.parse(savedTickets).map(t => ({...t, date: new Date(t.date)}));
+                } else {
+                    generatedTickets = [
+                        {id: 84920, subject: 'Refill', orderId: '1098432', status: 'Closed', date: new Date(Date.now() - 86400000*5)},
+                        {id: 85012, subject: 'Payment', orderId: '', status: 'Answered', date: new Date(Date.now() - 86400000)}
+                    ];
                 }
+
+                actualBalanceNum = parseFloat(savedBalance) || actualBalanceNum;
+                globalSpentNum = parseFloat(savedSpent) || globalSpentNum;
             } else {
-                creerTicketsDefaut();
+                generatedTickets = [
+                    {id: 84920, subject: 'Refill', orderId: '1098432', status: 'Closed', date: new Date(Date.now() - 86400000*5)},
+                    {id: 85012, subject: 'Payment', orderId: '', status: 'Answered', date: new Date(Date.now() - 86400000)}
+                ];
                 initializeMassiveData();
                 sauvegarderDonnees();
             }
 
-            // Mise à jour de l'interface
-            updateBalanceUI();
-            document.getElementById('global-spent-count').textContent = "$" + globalSpentNum.toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 2});
             document.getElementById('global-orders-count').textContent = generatedOrders.length.toLocaleString();
+            document.getElementById('global-spent-count').textContent = "$" + globalSpentNum.toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 2});
             if(document.getElementById('count-orders')) document.getElementById('count-orders').textContent = generatedOrders.length.toLocaleString();
             if(document.getElementById('count-funds')) document.getElementById('count-funds').textContent = generatedFunds.length.toLocaleString();
+            updateBalanceUI();
             updateTicketCounter();
         }
 
-        function creerTicketsDefaut() {
-            generatedTickets = [
-                {id: 84920, subject: 'Refill', orderId: '1098432', status: 'Closed', date: new Date(Date.now() - 86400000*5)},
-                {id: 85012, subject: 'Payment', orderId: '', status: 'Answered', date: new Date(Date.now() - 86400000)}
-            ];
-        }
-
+        // On limite la base initiale à 50 commandes pour éviter la surcharge mémoire
         function initializeMassiveData() {
             const startDate = new Date(2023, 0, 1).getTime();
             const endDate = new Date().getTime(); 
@@ -831,7 +817,7 @@
             container.classList.remove('hidden'); setTimeout(() => { container.classList.add('hidden'); }, 5000);
         }
 
-        // --- CHARGEMENT AU DEMARRAGE ---
+        // CHARGEMENT AU DEMARRAGE
         chargerDonnees();
 
         // --- SUBMIT NEW ORDER (AVEC SAUVEGARDE) ---
@@ -853,9 +839,9 @@
             const totalQty = isDripFeed ? baseQty * (parseInt(dripRuns.value) || 1) : baseQty;
             const serviceName = isDripFeed ? `${selectedService.name} (Drip)` : selectedService.name;
 
-            generatedOrders.unshift({ id: Math.floor(Math.random() * 8999999 + 1000000), date: new Date(), service: serviceName, qty: totalQty, price: totalPrice.toFixed(3), status: 'Processing' });
+            generatedOrders.unshift({ id: Math.floor(Math.random() * 8999999 + 1000000), date: new Date(), service: serviceName, link: link, qty: totalQty, price: totalPrice.toFixed(3), status: 'Processing' });
             
-            sauvegarderDonnees();
+            sauvegarderDonnees(); // Sauvegarde locale
 
             document.getElementById('global-orders-count').textContent = generatedOrders.length.toLocaleString();
             if(document.getElementById('count-orders')) document.getElementById('count-orders').textContent = generatedOrders.length.toLocaleString();
@@ -896,10 +882,10 @@
             globalSpentNum += totalCost; document.getElementById('global-spent-count').textContent = "$" + globalSpentNum.toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 2});
 
             validOrders.forEach(o => {
-                generatedOrders.unshift({ id: Math.floor(Math.random() * 8999999 + 1000000), date: new Date(), service: o.service.name, qty: o.qty, price: o.price.toFixed(3), status: 'Processing' });
+                generatedOrders.unshift({ id: Math.floor(Math.random() * 8999999 + 1000000), date: new Date(), service: o.service.name, link: o.link, qty: o.qty, price: o.price.toFixed(3), status: 'Processing' });
             });
             
-            sauvegarderDonnees();
+            sauvegarderDonnees(); // Sauvegarde locale
 
             document.getElementById('global-orders-count').textContent = generatedOrders.length.toLocaleString();
             if(document.getElementById('count-orders')) document.getElementById('count-orders').textContent = generatedOrders.length.toLocaleString();
@@ -920,7 +906,7 @@
                 actualBalanceNum += amountToFund; updateBalanceUI();
                 generatedFunds.unshift({ id: 'TX-' + Math.floor(Math.random() * 90000 + 10000), date: new Date(), amount: amountToFund, method: 'Visa •••• 3490', status: 'Completed' });
                 
-                sauvegarderDonnees();
+                sauvegarderDonnees(); // Sauvegarde locale
                 
                 if(document.getElementById('count-funds')) document.getElementById('count-funds').textContent = generatedFunds.length.toLocaleString();
                 addFundsModal.classList.add('hidden');
@@ -955,7 +941,7 @@
             if(!msg) return showMsg(document.getElementById('ticket-msg-container'), 'Message empty.', true);
             generatedTickets.unshift({ id: Math.floor(Math.random() * 90000 + 10000), subject: subject, status: 'Pending', date: new Date() });
             
-            sauvegarderDonnees();
+            sauvegarderDonnees(); // Sauvegarde locale
             
             document.getElementById('ticket-message').value = ''; renderTickets(); showMsg(document.getElementById('ticket-msg-container'), 'Ticket created!', false);
         });
@@ -980,7 +966,8 @@
             pageData.forEach(item => {
                 const div = document.createElement('div'); div.className = "bg-cpanCard border border-gray-800 rounded-xl p-4 flex flex-col gap-2";
                 if (activeHistTab === 'orders') {
-                    div.innerHTML = `<div class="flex justify-between items-start"><span class="text-xs text-gray-500 font-mono">#${item.id}</span><span class="text-[0.65rem] uppercase font-bold tracking-wider px-2 py-0.5 rounded border text-blue-400 bg-blue-500/10 border-blue-500/20">${item.status}</span></div><div class="text-sm font-semibold text-gray-200">${item.service}</div><div class="flex justify-between items-end mt-1 pt-2 border-t border-gray-800/50"><span class="text-xs text-gray-500">Qty: ${item.qty}</span><span class="text-cpanAccentLight font-bold">$${item.price}</span></div>`;
+                    const linkHtml = item.link ? `<div class="text-[0.65rem] text-gray-400 truncate w-full mt-0.5"><i class="fa-solid fa-link text-gray-600 mr-1"></i>${item.link}</div>` : '';
+                    div.innerHTML = `<div class="flex justify-between items-start"><span class="text-xs text-gray-500 font-mono">#${item.id}</span><span class="text-[0.65rem] uppercase font-bold tracking-wider px-2 py-0.5 rounded border text-blue-400 bg-blue-500/10 border-blue-500/20">${item.status}</span></div><div class="text-sm font-semibold text-gray-200">${item.service}</div>${linkHtml}<div class="flex justify-between items-end mt-1 pt-2 border-t border-gray-800/50"><span class="text-xs text-gray-500">Qty: ${item.qty}</span><span class="text-cpanAccentLight font-bold">$${item.price}</span></div>`;
                 } else {
                     div.innerHTML = `<div class="flex justify-between items-start"><span class="text-xs text-gray-500 font-mono">${item.id}</span><span class="text-[0.65rem] text-green-400 bg-green-500/10 border border-green-500/20 uppercase font-bold tracking-wider px-2 py-0.5 rounded">Completed</span></div><div class="text-sm font-semibold text-gray-200 flex items-center gap-2 mt-1"><i class="fa-solid fa-building-columns text-gray-500"></i> ${item.method}</div><div class="flex justify-between items-end mt-1 pt-2 border-t border-gray-800/50"><span class="text-xs text-gray-500">Add funds</span><span class="text-green-500 font-bold text-lg">+$${item.amount.toFixed(2)}</span></div>`;
                 }
