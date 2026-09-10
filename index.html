@@ -4,15 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <!-- FORCER LE RAFRAÎCHISSEMENT DU CACHE (SÉCURITÉ ANDROID) -->
+    <!-- FORCER LE RAFRAÎCHISSEMENT DU CACHE -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     
     <title>SMMCPAN - Dashboard Mobile (VIP)</title>
     
-    <!-- Lien vers le Web App Manifest -->
     <link rel="manifest" href="manifest.json">
+
+    <!-- TUEUR DE CACHE PWA (Force le téléphone à télécharger le nouveau code GitHub) -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) {
+                    registration.unregister();
+                }
+            });
+        }
+    </script>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -539,14 +549,19 @@
 
         // --- GESTION DU LOCAL STORAGE POUR LA PERSISTANCE ---
         function sauvegarderDonnees() {
-            localStorage.setItem('cpan_orders', JSON.stringify(generatedOrders));
-            localStorage.setItem('cpan_funds', JSON.stringify(generatedFunds));
-            localStorage.setItem('cpan_tickets', JSON.stringify(generatedTickets));
-            localStorage.setItem('cpan_balance', actualBalanceNum.toString());
-            localStorage.setItem('cpan_spent', globalSpentNum.toString());
+            try {
+                localStorage.setItem('cpan_orders', JSON.stringify(generatedOrders));
+                localStorage.setItem('cpan_funds', JSON.stringify(generatedFunds));
+                localStorage.setItem('cpan_tickets', JSON.stringify(generatedTickets));
+                localStorage.setItem('cpan_balance', actualBalanceNum.toString());
+                localStorage.setItem('cpan_spent', globalSpentNum.toString());
+            } catch (e) {
+                // Alerte visible si le téléphone bloque vraiment la mémoire
+                alert("Erreur Android : Le stockage est bloqué sur ton téléphone (" + e.message + ")");
+            }
         }
 
-        // --- VERSION CORRIGÉE : AUCUNE FAUSSE DONNÉE GÉNÉRÉE ---
+        // --- CHARGEMENT DES DONNÉES ---
         function chargerDonnees() {
             try {
                 const savedOrders = localStorage.getItem('cpan_orders');
