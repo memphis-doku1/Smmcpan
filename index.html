@@ -224,6 +224,12 @@
                         <input type="text" id="order-link-input" placeholder="https://" class="w-full bg-cpanInput rounded-xl py-3 px-4 text-white text-sm border border-gray-800 focus:outline-none focus:border-cpanAccent">
                     </div>
 
+                    <!-- NOUVEAU CHAMP POUR LES COMMENTAIRES CUSTOM -->
+                    <div id="custom-comments-container" class="hidden">
+                        <label class="block text-sm text-gray-300 mb-2">Commentaires (1 par ligne)</label>
+                        <textarea id="custom-comments-input" rows="5" placeholder="Saisissez un commentaire par ligne..." class="w-full bg-cpanInput rounded-xl py-3 px-4 text-white text-sm border border-gray-800 focus:outline-none focus:border-cpanAccent resize-y custom-scrollbar"></textarea>
+                    </div>
+
                     <div class="grid grid-cols-2 gap-3">
                         <div class="flex flex-col">
                             <label class="block text-sm text-gray-300 mb-2">Quantity</label>
@@ -516,7 +522,8 @@
                 { id: 103, name: 'Facebook Followers + Likes', rate: 3.4, min: 100, max: 50000 },
                 { id: 104, name: 'Facebook Commentaires', rate: 60.0, min: 10, max: 5000 },
                 { id: 105, name: 'Facebook Spectateurs Live', rate: 15.0, min: 50, max: 5000 },
-                { id: 106, name: 'Facebook Followers + Likes Arabes Account with VPN', rate: 2.9, min: 100, max: 50000 }
+                { id: 106, name: 'Facebook Followers + Likes Arabes Account with VPN', rate: 2.9, min: 100, max: 50000 },
+                { id: 107, name: 'Facebook Commentaires Custom Arabe', rate: 8.5, min: 100, max: 5000 }
             ],
             youtube: [
                 { id: 201, name: 'YouTube Vues', rate: 2.11, min: 1000, max: 5000000 },
@@ -799,9 +806,31 @@
                 originalPriceDisplay.textContent = fakeOriginalPrice.toFixed(4); originalPriceDisplay.classList.remove('hidden');
             } else { originalPriceDisplay.classList.add('hidden'); }
             priceDisplay.textContent = finalVipPrice.toFixed(4); orderMsgContainer.classList.add('hidden');
+            
+            const commentsContainer = document.getElementById('custom-comments-container');
+            if (commentsContainer) {
+                if (selectedService.name.toLowerCase().includes('custom')) {
+                    commentsContainer.classList.remove('hidden');
+                } else {
+                    commentsContainer.classList.add('hidden');
+                }
+            }
         }
+        
         quantityInput.addEventListener('input', updateCalculations);
         dripRuns.addEventListener('input', updateCalculations);
+        
+        const customCommentsInput = document.getElementById('custom-comments-input');
+        if(customCommentsInput) {
+            customCommentsInput.addEventListener('input', (e) => {
+                const lines = e.target.value.split('\n').filter(l => l.trim() !== '');
+                if(lines.length > 0) {
+                    quantityInput.value = lines.length;
+                    updateCalculations();
+                }
+            });
+        }
+        
         updateServices();
 
         function showMsg(container, text, isError) {
