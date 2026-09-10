@@ -135,7 +135,7 @@
                 </div>
             </div>
             <div class="text-[1.7rem] font-bold flex items-center gap-3">
-                <span id="balance-amount">$0.0075791</span>
+                <span id="balance-amount">$0.00</span>
                 <button id="toggle-balance" class="text-gray-500 hover:text-white transition-colors focus:outline-none">
                     <i id="eye-icon" class="fa-solid fa-eye text-sm"></i>
                 </button>
@@ -477,8 +477,8 @@
     <!-- LOGIQUE JAVASCRIPT GLOBALE -->
     <script>
         const VIP_DISCOUNT_MULTIPLIER = 0.5;
-        let actualBalanceNum = 0.0075791; 
-        let globalSpentNum = 17972.7;
+        let actualBalanceNum = 0.00; 
+        let globalSpentNum = 0.00;
         let generatedOrders = [];
         let generatedFunds = [];
         let generatedTickets = []; 
@@ -536,6 +536,7 @@
             localStorage.setItem('cpan_spent', globalSpentNum.toString());
         }
 
+        // --- VERSION CORRIGÉE : AUCUNE FAUSSE DONNÉE GÉNÉRÉE ---
         function chargerDonnees() {
             try {
                 const savedOrders = localStorage.getItem('cpan_orders');
@@ -544,34 +545,18 @@
                 const savedBalance = localStorage.getItem('cpan_balance');
                 const savedSpent = localStorage.getItem('cpan_spent');
 
-                // Si aucune donnée n'existe, on initialise avec des fausses données
-                if (!savedOrders && !savedFunds) {
-                    initializeMassiveData();
-                    sauvegarderDonnees();
-                } else {
-                    if (savedOrders) generatedOrders = JSON.parse(savedOrders).map(o => ({...o, date: new Date(o.date)}));
-                    if (savedFunds) generatedFunds = JSON.parse(savedFunds).map(f => ({...f, date: new Date(f.date)}));
-                    
-                    if (savedTickets) {
-                        generatedTickets = JSON.parse(savedTickets).map(t => ({...t, date: new Date(t.date)}));
-                    } else {
-                        generatedTickets = [
-                            {id: 84920, subject: 'Refill', orderId: '1098432', status: 'Closed', date: new Date(Date.now() - 86400000*5)},
-                            {id: 85012, subject: 'Payment', orderId: '', status: 'Answered', date: new Date(Date.now() - 86400000)}
-                        ];
-                    }
+                if (savedOrders) generatedOrders = JSON.parse(savedOrders).map(o => ({...o, date: new Date(o.date)}));
+                if (savedFunds) generatedFunds = JSON.parse(savedFunds).map(f => ({...f, date: new Date(f.date)}));
+                if (savedTickets) generatedTickets = JSON.parse(savedTickets).map(t => ({...t, date: new Date(t.date)}));
 
-                    // CORRECTION DU BUG : Ne pas utiliser "||" si la valeur est 0, sinon ça se remettait au solde par défaut
-                    if (savedBalance !== null && savedBalance !== "") actualBalanceNum = parseFloat(savedBalance);
-                    if (savedSpent !== null && savedSpent !== "") globalSpentNum = parseFloat(savedSpent);
-                }
+                if (savedBalance !== null && savedBalance !== "") actualBalanceNum = parseFloat(savedBalance);
+                if (savedSpent !== null && savedSpent !== "") globalSpentNum = parseFloat(savedSpent);
+
             } catch (e) {
-                console.error("Erreur critique du LocalStorage :", e);
-                // On charge par défaut pour éviter un crash complet
-                initializeMassiveData();
+                console.error("Erreur de lecture du LocalStorage :", e);
             }
 
-            // Met à jour l'affichage global
+            // Mise à jour de l'interface
             document.getElementById('global-orders-count').textContent = generatedOrders.length.toLocaleString();
             document.getElementById('global-spent-count').textContent = "$" + globalSpentNum.toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 2});
             if(document.getElementById('count-orders')) document.getElementById('count-orders').textContent = generatedOrders.length.toLocaleString();
@@ -579,33 +564,6 @@
             
             updateBalanceUI();
             updateTicketCounter();
-        }
-
-        // On limite la base initiale à 50 commandes pour éviter la surcharge mémoire
-        function initializeMassiveData() {
-            const startDate = new Date(2023, 0, 1).getTime();
-            const endDate = new Date().getTime(); 
-            const orderStatuses = ['Completed', 'Completed', 'Processing', 'Partial', 'Canceled'];
-            const flatServices = servicesData.all;
-
-            generatedOrders = [];
-            generatedFunds = [];
-
-            for (let i = 0; i < 50; i++) {
-                const randomDate = new Date(startDate + Math.random() * (endDate - startDate));
-                const randomService = flatServices[Math.floor(Math.random() * flatServices.length)];
-                const qty = Math.floor(Math.random() * 5000) + 100;
-                const price = ((qty / (randomService.unit || 1000)) * randomService.rate).toFixed(3);
-                generatedOrders.push({ id: Math.floor(Math.random() * 8999999 + 1000000), date: randomDate, service: randomService.name, link: "https://generique.link/test", qty: qty, price: price, status: orderStatuses[Math.floor(Math.random() * orderStatuses.length)] });
-            }
-            const fundMethods = ['Visa •••• 3490', 'PayPal (saber...)', 'Mastercard •••• 1212', 'Crypto (BTC)'];
-            for (let i = 0; i < 15; i++) {
-                const randomDate = new Date(startDate + Math.random() * (endDate - startDate));
-                const amount = (Math.random() * 150 + 10).toFixed(2);
-                generatedFunds.push({ id: 'TX-' + Math.floor(Math.random() * 90000 + 10000), date: randomDate, amount: parseFloat(amount), method: fundMethods[Math.floor(Math.random() * fundMethods.length)], status: 'Completed' });
-            }
-            generatedOrders.sort((a, b) => b.date - a.date);
-            generatedFunds.sort((a, b) => b.date - a.date);
         }
 
         const tabNavNew = document.getElementById('tab-nav-new');
@@ -829,7 +787,7 @@
         // CHARGEMENT AU DEMARRAGE
         chargerDonnees();
 
-        // --- SUBMIT NEW ORDER (AVEC SAUVEGARDE) ---
+        // --- SUBMIT NEW ORDER (AVEC SAUVEGARDE FORCÉE) ---
         document.getElementById('submit-order-btn').addEventListener('click', () => {
             const baseQty = parseInt(quantityInput.value) || 0;
             const link = orderLinkInput.value.trim();
@@ -850,7 +808,7 @@
 
             generatedOrders.unshift({ id: Math.floor(Math.random() * 8999999 + 1000000), date: new Date(), service: serviceName, link: link, qty: totalQty, price: totalPrice.toFixed(3), status: 'Processing' });
             
-            sauvegarderDonnees(); // Sauvegarde locale
+            sauvegarderDonnees();
 
             document.getElementById('global-orders-count').textContent = generatedOrders.length.toLocaleString();
             if(document.getElementById('count-orders')) document.getElementById('count-orders').textContent = generatedOrders.length.toLocaleString();
@@ -858,7 +816,7 @@
             orderLinkInput.value = ''; quantityInput.value = ''; updateCalculations();
         });
 
-        // --- MASS ORDER (AVEC SAUVEGARDE) ---
+        // --- MASS ORDER (AVEC SAUVEGARDE FORCÉE) ---
         const massOrderInput = document.getElementById('mass-order-input');
         const massLinesCount = document.getElementById('mass-lines-count');
         const massMsgContainer = document.getElementById('mass-msg-container');
@@ -894,7 +852,7 @@
                 generatedOrders.unshift({ id: Math.floor(Math.random() * 8999999 + 1000000), date: new Date(), service: o.service.name, link: o.link, qty: o.qty, price: o.price.toFixed(3), status: 'Processing' });
             });
             
-            sauvegarderDonnees(); // Sauvegarde locale
+            sauvegarderDonnees(); 
 
             document.getElementById('global-orders-count').textContent = generatedOrders.length.toLocaleString();
             if(document.getElementById('count-orders')) document.getElementById('count-orders').textContent = generatedOrders.length.toLocaleString();
@@ -902,7 +860,7 @@
             massOrderInput.value = ''; massLinesCount.textContent = '0';
         });
 
-        // --- ADD FUNDS (AVEC SAUVEGARDE) ---
+        // --- ADD FUNDS (AVEC SAUVEGARDE FORCÉE) ---
         const openAddFundsBtn = document.getElementById('open-add-funds');
         const addFundsModal = document.getElementById('add-funds-modal');
         const addFundsContent = document.getElementById('add-funds-content');
@@ -915,7 +873,7 @@
                 actualBalanceNum += amountToFund; updateBalanceUI();
                 generatedFunds.unshift({ id: 'TX-' + Math.floor(Math.random() * 90000 + 10000), date: new Date(), amount: amountToFund, method: 'Visa •••• 3490', status: 'Completed' });
                 
-                sauvegarderDonnees(); // Sauvegarde locale
+                sauvegarderDonnees(); 
                 
                 if(document.getElementById('count-funds')) document.getElementById('count-funds').textContent = generatedFunds.length.toLocaleString();
                 addFundsModal.classList.add('hidden');
@@ -950,7 +908,7 @@
             if(!msg) return showMsg(document.getElementById('ticket-msg-container'), 'Message empty.', true);
             generatedTickets.unshift({ id: Math.floor(Math.random() * 90000 + 10000), subject: subject, status: 'Pending', date: new Date() });
             
-            sauvegarderDonnees(); // Sauvegarde locale
+            sauvegarderDonnees(); 
             
             document.getElementById('ticket-message').value = ''; renderTickets(); showMsg(document.getElementById('ticket-msg-container'), 'Ticket created!', false);
         });
@@ -986,6 +944,15 @@
         }
         document.getElementById('page-prev').addEventListener('click', () => { if (histCurrentPage > 1) { histCurrentPage--; renderHistoryList(); } });
         document.getElementById('page-next').addEventListener('click', () => { histCurrentPage++; renderHistoryList(); });
+
+        // --- GESTION DES ÉVÉNEMENTS DE FERMETURE (POUR MOBILE/PWA) ---
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                sauvegarderDonnees();
+            }
+        });
+        window.addEventListener('pagehide', sauvegarderDonnees);
+        window.addEventListener('beforeunload', sauvegarderDonnees);
     </script>
 </body>
 </html>
