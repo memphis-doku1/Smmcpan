@@ -217,6 +217,11 @@
                             </div>
                             <input type="hidden" id="service" value="">
                         </div>
+                        
+                        <!-- CONTENEUR POUR LA DESCRIPTION DU SERVICE -->
+                        <div id="service-description-container" class="hidden mt-3 bg-cpanInput/50 border border-cpanAccent/30 rounded-xl p-3 text-xs text-gray-300 leading-relaxed shadow-inner">
+                            <!-- Le contenu sera injecté ici par JS -->
+                        </div>
                     </div>
 
                     <div>
@@ -525,7 +530,16 @@
                 { id: 106, name: 'Facebook Followers + Likes Arabes Account with VPN', rate: 2.9, min: 100, max: 50000 },
                 { id: 107, name: 'Facebook Commentaires Custom Arabe', rate: 8.5, min: 100, max: 5000 },
                 { id: 108, name: 'Facebook Share', rate: 4.2, min: 100, max: 50000 },
-                { id: 109, name: 'Facebook Likes Mix Arabe', rate: 4.2, min: 100, max: 50000 }
+                { id: 109, name: 'Facebook Likes Mix Arabe', rate: 4.2, min: 100, max: 50000 },
+                { 
+                    id: 110, 
+                    name: 'Pack Global Facebook (+5M Chiffres: Followers, Vues, Commentaires AI, Share, Save) - VPN Maroc - Max 2 Pages', 
+                    rate: 500.00, 
+                    min: 1, 
+                    max: 10, 
+                    unit: 1,
+                    description: '<strong class="text-cpanAccentLight"><i class="fa-solid fa-crown mr-1"></i> Détails du Pack VIP Global :</strong><ul class="list-disc pl-4 mt-2 space-y-1"><li><strong>Followers & Likes :</strong> Comptes de haute qualité (Ciblage Arabe/Marocain).</li><li><strong>Vues (+5M chiffres) :</strong> Boost massif pour vos vidéos.</li><li><strong>Commentaires AI :</strong> Des milliers de commentaires générés par IA, pertinents et adaptés à votre contenu.</li><li><strong>Engagement :</strong> Partages (Share) et Sauvegardes (Save) pour tromper l\'algorithme.</li><li><strong>Sécurité VPN :</strong> Géré via VPN Marocain pour éviter les restrictions.</li><li><strong>Flexibilité :</strong> Peut être réparti sur <strong>2 pages maximum</strong>.</li></ul>'
+                }
             ],
             youtube: [
                 { id: 201, name: 'YouTube Vues', rate: 3.6, min: 1000, max: 5000000 },
@@ -566,7 +580,6 @@
                 localStorage.setItem('cpan_balance', actualBalanceNum.toString());
                 localStorage.setItem('cpan_spent', globalSpentNum.toString());
             } catch (e) {
-                // Alerte visible si le téléphone bloque vraiment la mémoire
                 alert("Erreur Android : Le stockage est bloqué sur ton téléphone (" + e.message + ")");
             }
         }
@@ -591,7 +604,6 @@
                 console.error("Erreur de lecture du LocalStorage :", e);
             }
 
-            // Mise à jour de l'interface
             document.getElementById('global-orders-count').textContent = generatedOrders.length.toLocaleString();
             document.getElementById('global-spent-count').textContent = "$" + globalSpentNum.toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 2});
             if(document.getElementById('count-orders')) document.getElementById('count-orders').textContent = generatedOrders.length.toLocaleString();
@@ -716,6 +728,7 @@
         const limitsDisplay = document.getElementById('limits');
         const orderLinkInput = document.getElementById('order-link-input');
         const orderMsgContainer = document.getElementById('order-msg-container');
+        const serviceDescriptionContainer = document.getElementById('service-description-container');
         let currentPlatform = 'all';
 
         customSelectBtn.addEventListener('click', (e) => {
@@ -767,13 +780,22 @@
                 li.addEventListener('click', () => { selectService(service); customSelectDropdown.classList.add('hidden'); customSelectBtn.classList.remove('border-cpanAccent'); customSelectIcon.classList.remove('rotate-180'); });
                 customServiceList.appendChild(li);
             });
-            if(listToDisplay.length > 0) selectService(listToDisplay[0]); else { serviceHiddenInput.value = ""; customSelectText.textContent = "No services available"; }
+            if(listToDisplay.length > 0) selectService(listToDisplay[0]); else { serviceHiddenInput.value = ""; customSelectText.textContent = "No services available"; serviceDescriptionContainer.classList.add('hidden'); }
         }
 
         function selectService(service) {
             serviceHiddenInput.value = service.id;
             customSelectText.innerHTML = `<span class="font-mono text-gray-500 mr-1.5">[${service.id}]</span> <span class="text-white">${service.name}</span>`;
             if(favouriteServiceIds.has(service.id)) favIconIndicator.className = "fa-solid text-yellow-400"; else favIconIndicator.className = "fa-regular fa-star";
+            
+            // AFFICHER LA DESCRIPTION SI ELLE EXISTE
+            if (service.description) {
+                serviceDescriptionContainer.innerHTML = service.description;
+                serviceDescriptionContainer.classList.remove('hidden');
+            } else {
+                serviceDescriptionContainer.classList.add('hidden');
+            }
+
             updateCalculations();
         }
 
@@ -812,7 +834,7 @@
             
             const commentsContainer = document.getElementById('custom-comments-container');
             if (commentsContainer) {
-                if (selectedService.name.toLowerCase().includes('custom')) {
+                if (selectedService.name.toLowerCase().includes('custom') || selectedService.name.toLowerCase().includes('commentaires ai')) {
                     commentsContainer.classList.remove('hidden');
                 } else {
                     commentsContainer.classList.add('hidden');
@@ -841,10 +863,8 @@
             container.classList.remove('hidden'); setTimeout(() => { container.classList.add('hidden'); }, 5000);
         }
 
-        // CHARGEMENT AU DEMARRAGE
         chargerDonnees();
 
-        // --- SUBMIT NEW ORDER (AVEC SAUVEGARDE FORCÉE) ---
         document.getElementById('submit-order-btn').addEventListener('click', () => {
             const baseQty = parseInt(quantityInput.value) || 0;
             const link = orderLinkInput.value.trim();
@@ -873,7 +893,6 @@
             orderLinkInput.value = ''; quantityInput.value = ''; updateCalculations();
         });
 
-        // --- MASS ORDER (AVEC SAUVEGARDE FORCÉE) ---
         const massOrderInput = document.getElementById('mass-order-input');
         const massLinesCount = document.getElementById('mass-lines-count');
         const massMsgContainer = document.getElementById('mass-msg-container');
@@ -917,7 +936,6 @@
             massOrderInput.value = ''; massLinesCount.textContent = '0';
         });
 
-        // --- ADD FUNDS (AVEC SAUVEGARDE FORCÉE) ---
         const openAddFundsBtn = document.getElementById('open-add-funds');
         const addFundsModal = document.getElementById('add-funds-modal');
         const addFundsContent = document.getElementById('add-funds-content');
@@ -943,7 +961,6 @@
         profileBtn.addEventListener('click', (e) => { e.stopPropagation(); profileModal.classList.remove('hidden'); setTimeout(() => { profileContent.classList.remove('scale-95', 'opacity-0'); profileContent.classList.add('scale-100', 'opacity-100'); }, 10); });
         document.getElementById('close-profile-btn').addEventListener('click', () => { profileContent.classList.remove('scale-100', 'opacity-100'); profileContent.classList.add('scale-95', 'opacity-0'); setTimeout(() => { profileModal.classList.add('hidden'); }, 200); });
 
-        // TICKETS
         const openTicketsBtn = document.getElementById('open-tickets-btn');
         const ticketsView = document.getElementById('tickets-view');
         openTicketsBtn.addEventListener('click', (e) => { e.preventDefault(); dropdownMenu.classList.add('hidden'); ticketsView.classList.remove('hidden'); setTimeout(() => { ticketsView.classList.remove('translate-x-full'); }, 10); renderTickets(); });
@@ -970,7 +987,6 @@
             document.getElementById('ticket-message').value = ''; renderTickets(); showMsg(document.getElementById('ticket-msg-container'), 'Ticket created!', false);
         });
 
-        // HISTORIQUE
         const openHistoryBtn = document.getElementById('open-history-btn');
         const historyView = document.getElementById('history-view');
         openHistoryBtn.addEventListener('click', (e) => { e.preventDefault(); dropdownMenu.classList.add('hidden'); historyView.classList.remove('hidden'); setTimeout(() => { historyView.classList.remove('translate-x-full'); }, 10); renderHistoryList(); });
@@ -1002,7 +1018,6 @@
         document.getElementById('page-prev').addEventListener('click', () => { if (histCurrentPage > 1) { histCurrentPage--; renderHistoryList(); } });
         document.getElementById('page-next').addEventListener('click', () => { histCurrentPage++; renderHistoryList(); });
 
-        // --- GESTION DES ÉVÉNEMENTS DE FERMETURE (POUR MOBILE/PWA) ---
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'hidden') {
                 sauvegarderDonnees();
